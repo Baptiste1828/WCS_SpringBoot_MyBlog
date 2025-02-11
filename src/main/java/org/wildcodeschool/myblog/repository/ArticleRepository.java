@@ -10,7 +10,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     List<Article> findByTitle(String title);
 
-    List<Article> findByContent(String content);
+    List<Article> findByContentContaining(String content);
 
     List<Article> findByCreatedAtAfter(LocalDateTime createdAtAfter);
 
