@@ -2,10 +2,13 @@ package org.wildcodeschool.myblog.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.wildcodeschool.myblog.dto.CategoryDTO;
 import org.wildcodeschool.myblog.model.Category;
 import org.wildcodeschool.myblog.service.CategoryService;
+import org.wildcodeschool.myblog.validation.OnCreate;
+import org.wildcodeschool.myblog.validation.OnUpdate;
 
 import java.util.List;
 
@@ -35,13 +38,13 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDTO> createCategory(@RequestBody Category category) {
+    public ResponseEntity<CategoryDTO> createCategory(@Validated(OnCreate.class) @RequestBody Category category) {
         CategoryDTO savedCategory = categoryService.create(category);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
+    public ResponseEntity<CategoryDTO> updateCategory(@Validated(OnUpdate.class) @PathVariable Long id, @RequestBody Category categoryDetails) {
         CategoryDTO updatedCategory = categoryService.update(id, categoryDetails);
         return ResponseEntity.ok(updatedCategory);
     }
