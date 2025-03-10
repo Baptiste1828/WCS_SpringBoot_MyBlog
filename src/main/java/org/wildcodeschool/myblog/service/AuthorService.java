@@ -2,6 +2,8 @@ package org.wildcodeschool.myblog.service;
 
 import org.springframework.stereotype.Service;
 import org.wildcodeschool.myblog.dto.AuthorDTO;
+import org.wildcodeschool.myblog.exception.BadRequestException;
+import org.wildcodeschool.myblog.exception.ResourceNotFoundException;
 import org.wildcodeschool.myblog.mapper.AuthorMapper;
 import org.wildcodeschool.myblog.model.Article;
 import org.wildcodeschool.myblog.model.ArticleAuthor;
@@ -39,10 +41,8 @@ public class AuthorService {
     }
 
     public AuthorDTO getById(Long id) {
-        Author author = authorRepository.findById(id).orElse(null);
-        if (author == null) {
-            return null;
-        }
+        Author author = authorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Author with id " + id + " was not found."));
         return authorMapper.convertToDTO(author);
     }
 
@@ -52,11 +52,8 @@ public class AuthorService {
         if (author.getArticleAuthors() != null) {
             for (ArticleAuthor articleAuthor : author.getArticleAuthors()) {
                 Article article = articleAuthor.getArticle();
-                article = articleRepository.findById(article.getId()).orElse(null);
-                if (article == null) {
-                    return null;
-                }
-
+                article = articleRepository.findById(article.getId())
+                        .orElseThrow(() -> new BadRequestException("Article with id " + articleAuthor.getArticle().getId() + " does not exist. Unable to create author."));
                 articleAuthor.setArticle(article);
                 articleAuthor.setAuthor(savedAuthor);
 
@@ -67,10 +64,8 @@ public class AuthorService {
     }
 
     public AuthorDTO update(Long id, Author authorDetails) {
-        Author author = authorRepository.findById(id).orElse(null);
-        if (author == null) {
-            return null;
-        }
+        Author author = authorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Author with id " + id + " was not found."));
         author.setFirstname(authorDetails.getFirstname());
         author.setLastname(authorDetails.getLastname());
 
@@ -81,11 +76,8 @@ public class AuthorService {
 
             for (ArticleAuthor articleAuthorDetails : authorDetails.getArticleAuthors()) {
                 Article article = articleAuthorDetails.getArticle();
-                article = articleRepository.findById(article.getId()).orElse(null);
-                if (article == null) {
-                    return null;
-                }
-
+                article = articleRepository.findById(article.getId())
+                        .orElseThrow(() -> new BadRequestException("Article with id " + articleAuthorDetails.getArticle().getId() + " does not exist. Unable to update author."));
                 ArticleAuthor newArticleAuthor = new ArticleAuthor();
                 newArticleAuthor.setArticle(article);
                 newArticleAuthor.setAuthor(author);
@@ -103,16 +95,12 @@ public class AuthorService {
         return authorMapper.convertToDTO(savedAuthor);
     }
 
-    public boolean delete(Long id) {
-        Author author = authorRepository.findById(id).orElse(null);
-        if (author == null) {
-            return false;
-        }
-
+    public void delete(Long id) {
+        Author author = authorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Author with id " + id + " was not found."));
         if (author.getArticleAuthors() != null) {
             articleAuthorRepository.deleteAll(author.getArticleAuthors());
         }
         authorRepository.delete(author);
-        return true;
     }
 }

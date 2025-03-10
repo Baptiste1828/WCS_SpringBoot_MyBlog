@@ -30,9 +30,6 @@ public class ImageController {
     @GetMapping("/{id}")
     public ResponseEntity<ImageDTO> getImageById(@PathVariable Long id) {
         ImageDTO image = imageService.getById(id);
-        if (image == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(image);
     }
 
@@ -45,18 +42,12 @@ public class ImageController {
     @PutMapping("/{id}")
     public ResponseEntity<ImageDTO> updateImage(@PathVariable Long id, @RequestBody Image imageDetails) {
         ImageDTO updatedImage = imageService.update(id, imageDetails);
-        if (updatedImage == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(updatedImage);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteImage(@PathVariable Long id) {
-        if (imageService.delete(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        imageService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

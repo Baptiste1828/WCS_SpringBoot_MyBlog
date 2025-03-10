@@ -2,6 +2,8 @@ package org.wildcodeschool.myblog.service;
 
 import org.springframework.stereotype.Service;
 import org.wildcodeschool.myblog.dto.ArticleDTO;
+import org.wildcodeschool.myblog.exception.BadRequestException;
+import org.wildcodeschool.myblog.exception.ResourceNotFoundException;
 import org.wildcodeschool.myblog.mapper.ArticleMapper;
 import org.wildcodeschool.myblog.model.*;
 import org.wildcodeschool.myblog.repository.*;
@@ -42,10 +44,8 @@ public class ArticleService {
     }
 
     public ArticleDTO getById(Long id) {
-        Article article = articleRepository.findById(id).orElse(null);
-        if (article == null) {
-            return null;
-        }
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Article with id " + id + " was not found."));
         return articleMapper.convertToDTO(article);
     }
 
@@ -74,10 +74,8 @@ public class ArticleService {
         article.setUpdatedAt(LocalDateTime.now());
 
         if (article.getCategory() != null) {
-            Category category = categoryRepository.findById(article.getCategory().getId()).orElse(null);
-            if (category == null) {
-                return null;
-            }
+            Category category = categoryRepository.findById(article.getCategory().getId())
+                    .orElseThrow(() -> new BadRequestException("Category with id " + article.getCategory().getId() + " does not exist. Unable to create article."));
             article.setCategory(category);
         }
 
@@ -85,12 +83,9 @@ public class ArticleService {
             List<Image> validImages = new ArrayList<>();
             for (Image image : article.getImages()) {
                 if (image.getId() != null) {
-                    Image existingImage = imageRepository.findById(image.getId()).orElse(null);
-                    if (existingImage != null) {
-                        validImages.add(existingImage);
-                    } else {
-                        return null;
-                    }
+                    Image existingImage = imageRepository.findById(image.getId())
+                            .orElseThrow(() -> new BadRequestException("Image with id " + image.getId() + " does not exist. Unable to create article."));
+                    validImages.add(existingImage);
                 } else {
                     Image savedImage = imageRepository.save(image);
                     validImages.add(savedImage);
@@ -104,11 +99,8 @@ public class ArticleService {
         if (article.getArticleAuthors() != null) {
             for (ArticleAuthor articleAuthor : article.getArticleAuthors()) {
                 Author author = articleAuthor.getAuthor();
-                author = authorRepository.findById(author.getId()).orElse(null);
-                if (author == null) {
-                    return null;
-                }
-
+                author = authorRepository.findById(author.getId())
+                        .orElseThrow(() -> new BadRequestException("Author with id " + articleAuthor.getAuthor().getId() + " does not exist. Unable to create article."));
                 articleAuthor.setAuthor(author);
                 articleAuthor.setArticle(savedArticle);
 
@@ -120,19 +112,15 @@ public class ArticleService {
     }
 
     public ArticleDTO update(Long id, Article articleDetails) {
-        Article article = articleRepository.findById(id).orElse(null);
-        if (article == null) {
-            return null;
-        }
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Article with id " + id + " was not found."));
         article.setTitle(articleDetails.getTitle());
         article.setContent(articleDetails.getContent());
         article.setUpdatedAt(LocalDateTime.now());
 
         if (articleDetails.getCategory() != null) {
-            Category category = categoryRepository.findById(articleDetails.getCategory().getId()).orElse(null);
-            if (category == null) {
-                return null;
-            }
+            Category category = categoryRepository.findById(articleDetails.getCategory().getId())
+                    .orElseThrow(() -> new BadRequestException("Category with id " + articleDetails.getCategory().getId() + " does not exist. Unable to update article."));
             article.setCategory(category);
         }
 
@@ -140,12 +128,9 @@ public class ArticleService {
             List<Image> validImages = new ArrayList<>();
             for (Image image : articleDetails.getImages()) {
                 if (image.getId() != null) {
-                    Image existingImage = imageRepository.findById(image.getId()).orElse(null);
-                    if (existingImage != null) {
-                        validImages.add(existingImage);
-                    } else {
-                        return null;
-                    }
+                    Image existingImage = imageRepository.findById(image.getId())
+                            .orElseThrow(() -> new BadRequestException("Image with id " + image.getId() + " does not exist. Unable to update article."));
+                    validImages.add(existingImage);
                 } else {
                     Image savedImage = imageRepository.save(image);
                     validImages.add(savedImage);
@@ -158,16 +143,12 @@ public class ArticleService {
 
         if (articleDetails.getArticleAuthors() != null) {
             articleAuthorRepository.deleteAll(article.getArticleAuthors());
-
             List<ArticleAuthor> updatedArticleAuthors = new ArrayList<>();
 
             for (ArticleAuthor articleAuthorDetails : articleDetails.getArticleAuthors()) {
                 Author author = articleAuthorDetails.getAuthor();
-                author = authorRepository.findById(author.getId()).orElse(null);
-                if (author == null) {
-                    return null;
-                }
-
+                author = authorRepository.findById(author.getId())
+                        .orElseThrow(() -> new BadRequestException("Author with id " + articleAuthorDetails.getAuthor().getId() + " does not exist. Unable to update article."));
                 ArticleAuthor newArticleAuthor = new ArticleAuthor();
                 newArticleAuthor.setAuthor(author);
                 newArticleAuthor.setArticle(article);
@@ -185,16 +166,12 @@ public class ArticleService {
         return articleMapper.convertToDTO(updatedArticle);
     }
 
-    public boolean delete(Long id) {
-        Article article = articleRepository.findById(id).orElse(null);
-        if (article == null) {
-            return false;
-        }
-
+    public void delete(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Article with id " + id + " was not found."));
         if (article.getArticleAuthors() != null) {
             articleAuthorRepository.deleteAll(article.getArticleAuthors());
         }
         articleRepository.delete(article);
-        return true;
     }
 }

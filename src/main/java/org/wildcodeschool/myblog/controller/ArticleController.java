@@ -32,9 +32,6 @@ public class ArticleController {
     @GetMapping("/{id}")
     public ResponseEntity<ArticleDTO> getArticleById(@PathVariable Long id) {
         ArticleDTO article = articleService.getById(id);
-        if (article == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(article);
     }
 
@@ -77,27 +74,18 @@ public class ArticleController {
     @PostMapping
     public ResponseEntity<ArticleDTO> createArticle(@RequestBody Article article) {
         ArticleDTO savedArticle = articleService.create(article);
-        if (savedArticle == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ArticleDTO> updateArticle(@PathVariable Long id, @RequestBody Article articleDetails) {
         ArticleDTO updatedArticle = articleService.update(id, articleDetails);
-        if (updatedArticle == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(updatedArticle);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
-        if (articleService.delete(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        articleService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -31,36 +31,24 @@ public class AuthorController {
     @GetMapping("/{id}")
     public ResponseEntity<AuthorDTO> getAuthorById(@PathVariable Long id) {
         AuthorDTO author = authorService.getById(id);
-        if (author == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(author);
     }
 
     @PostMapping
     public ResponseEntity<AuthorDTO> createAuthor(@RequestBody Author author) {
         AuthorDTO savedAuthor = authorService.create(author);
-        if (savedAuthor == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAuthor);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<AuthorDTO> update(@PathVariable Long id, @RequestBody Author authorDetails) {
         AuthorDTO savedAuthor = authorService.update(id, authorDetails);
-        if (savedAuthor == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(savedAuthor);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (authorService.delete(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        authorService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
