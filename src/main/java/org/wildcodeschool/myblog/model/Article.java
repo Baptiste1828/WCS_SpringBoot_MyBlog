@@ -44,7 +44,6 @@ public class Article {
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -52,7 +51,6 @@ public class Article {
     public String getTitle() {
         return title;
     }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -60,15 +58,11 @@ public class Article {
     public String getContent() {
         return content;
     }
-
     public void setContent(String content) {
         this.content = content;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
+    public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -76,20 +70,16 @@ public class Article {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
     public Category getCategory() { return category; }
-
     public void setCategory(Category category) { this.category = category; }
 
     public List<Image> getImages() { return images; }
-
     public void setImages(List<Image> images) { this.images = images; }
 
     public List<ArticleAuthor> getArticleAuthors() { return articleAuthors; }
-
     public void setArticleAuthors(List<ArticleAuthor> articleAuthors) { this.articleAuthors = articleAuthors; }
 }
