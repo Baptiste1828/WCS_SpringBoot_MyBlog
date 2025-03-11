@@ -2,6 +2,7 @@ package org.wildcodeschool.myblog.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.wildcodeschool.myblog.dto.AuthorDTO;
@@ -37,18 +38,21 @@ public class AuthorController {
         return ResponseEntity.ok(author);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<AuthorDTO> createAuthor(@Validated(OnCreate.class) @RequestBody Author author) {
         AuthorDTO savedAuthor = authorService.create(author);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAuthor);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<AuthorDTO> update(@Validated(OnUpdate.class) @PathVariable Long id, @RequestBody Author authorDetails) {
         AuthorDTO savedAuthor = authorService.update(id, authorDetails);
         return ResponseEntity.ok(savedAuthor);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         authorService.delete(id);

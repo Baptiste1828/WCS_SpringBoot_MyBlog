@@ -2,6 +2,7 @@ package org.wildcodeschool.myblog.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.wildcodeschool.myblog.dto.CategoryDTO;
@@ -37,18 +38,21 @@ public class CategoryController {
         return ResponseEntity.ok(category);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CategoryDTO> createCategory(@Validated(OnCreate.class) @RequestBody Category category) {
         CategoryDTO savedCategory = categoryService.create(category);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<CategoryDTO> updateCategory(@Validated(OnUpdate.class) @PathVariable Long id, @RequestBody Category categoryDetails) {
         CategoryDTO updatedCategory = categoryService.update(id, categoryDetails);
         return ResponseEntity.ok(updatedCategory);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.delete(id);
